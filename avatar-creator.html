@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comic Chat — Character Maker</title>
+<style>
+  :root {
+    --face: #c0c0c0;
+    --hi:   #ffffff;
+    --lo:   #808080;
+    --dk:   #404040;
+    --nav1: #000080;
+    --nav2: #1084d0;
+    --paper:#fffdf3;
+    --ink:  #141414;
+    --ui: 11px Tahoma, Verdana, "MS Sans Serif", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; font: var(--ui); color: #000;
+    background: #2f7f7f url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='%232f7f7f'/><rect width='1' height='1' fill='%233b8f8f'/></svg>");
+    display: flex; align-items: flex-start; justify-content: center; padding: 22px 12px 60px;
+  }
+  .raised { border: 2px solid; border-color: var(--hi) var(--dk) var(--dk) var(--hi); box-shadow: inset -1px -1px 0 var(--lo), inset 1px 1px 0 #dfdfdf; }
+  .sunken { border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); box-shadow: inset 1px 1px 0 var(--dk), inset -1px -1px 0 #dfdfdf; }
+
+  .window { width: min(880px, 100%); background: var(--face); padding: 3px; }
+  .title {
+    background: linear-gradient(90deg, var(--nav1), var(--nav2));
+    color: #fff; font-weight: 700; padding: 3px 4px 4px 6px;
+    display: flex; align-items: center; gap: 6px; letter-spacing: .2px;
+  }
+  .title .spacer { flex: 1 }
+  .tbtn { width: 17px; height: 15px; background: var(--face); font: 10px/1 Tahoma; font-weight: 700; }
+  .menu { display: flex; gap: 2px; padding: 2px 4px; border-bottom: 1px solid var(--lo); }
+  .menu span { padding: 2px 7px; }
+  .menu span u { text-decoration: underline; }
+
+  .tabs { display: flex; gap: 2px; padding: 8px 8px 0; }
+  .tab { background: var(--face); padding: 4px 12px 5px; cursor: pointer; position: relative; top: 2px;
+         border: 2px solid; border-color: var(--hi) var(--dk) transparent var(--hi); }
+  .tab[aria-selected="true"] { top: 0; padding-bottom: 7px; font-weight: 700; z-index: 2; }
+
+  .pane { padding: 12px; border: 2px solid; border-color: var(--hi) var(--dk) var(--dk) var(--hi); }
+  .cols { display: grid; grid-template-columns: 292px 1fr; gap: 12px; }
+  @media (max-width: 720px) { .cols { grid-template-columns: 1fr } }
+
+  fieldset { border: 1px solid var(--lo); box-shadow: 1px 1px 0 var(--hi) inset, -1px -1px 0 var(--hi); margin: 0 0 10px; padding: 8px 9px 10px; }
+  legend { padding: 0 4px; font-weight: 700; }
+
+  /* stage ------------------------------------------------------------- */
+  #stage { background: var(--paper); display: block; width: 100%; height: 260px; }
+  .stagewrap { padding: 4px; background: var(--face); }
+
+  /* the gesture wheel — Comic Chat's signature control -------------------- */
+  #wheelwrap { background: var(--paper); padding: 2px; }
+  #wheel { display: block; width: 100%; height: 218px; touch-action: none; cursor: crosshair; }
+  #wheel .spoke { fill: #dcd3b4; stroke: var(--ink); stroke-width: 1.5; }
+  #wheel .spoke.on { fill: var(--nav2); }
+  #wheel .spoke:hover { fill: #ffd34d; }
+  #wheel text { font: 700 9px Tahoma, sans-serif; fill: var(--ink); }
+
+  /* controls ---------------------------------------------------------- */
+  .row { display: grid; grid-template-columns: 74px 1fr; align-items: center; gap: 6px; margin-bottom: 5px; }
+  .row > label { text-align: right; }
+  .cycler { display: flex; }
+  .cycler button { width: 20px; }
+  .cycler .val { flex: 1; background: #fff; padding: 3px 6px; text-align: center; text-transform: capitalize;
+                 border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
+  button {
+    font: var(--ui); background: var(--face); padding: 4px 10px; cursor: pointer;
+    border: 2px solid; border-color: var(--hi) var(--dk) var(--dk) var(--hi);
+    box-shadow: inset -1px -1px 0 var(--lo), inset 1px 1px 0 #dfdfdf;
+  }
+  button:active { border-color: var(--dk) var(--hi) var(--hi) var(--dk); box-shadow: inset 1px 1px 0 var(--lo); }
+  button:focus-visible, .tab:focus-visible, input:focus-visible { outline: 1px dotted #000; outline-offset: -4px; }
+  button.wide { width: 100%; }
+  input[type=text], textarea {
+    font: var(--ui); background: #fff; padding: 3px 5px; width: 100%;
+    border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo);
+  }
+  textarea { font-family: "Lucida Console", Consolas, monospace; resize: vertical; }
+  input[type=color] { width: 26px; height: 20px; padding: 0; border: 1px solid var(--dk); background: none; cursor: pointer; }
+
+  .swatches { display: flex; flex-wrap: wrap; gap: 3px; }
+  .chip { width: 15px; height: 15px; border: 1px solid var(--dk); cursor: pointer; padding: 0; box-shadow: none; }
+  .chip[aria-pressed="true"] { outline: 2px solid #000; outline-offset: 1px; }
+
+  .btnrow { display: flex; gap: 6px; flex-wrap: wrap; }
+  .status { margin-top: 8px; padding: 3px 6px; background: var(--face); }
+  .hint { color: #333; line-height: 1.5; }
+  code { font-family: "Lucida Console", Consolas, monospace; background: #fff; padding: 0 3px; }
+
+  /* roster ------------------------------------------------------------ */
+  .roster { display: flex; flex-wrap: wrap; gap: 8px; max-height: 320px; overflow: auto; padding: 6px; background: #fff;
+            border: 2px solid; border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
+  .card { width: 96px; text-align: center; background: var(--paper); padding: 4px; border: 1px solid var(--lo); }
+  .card svg { width: 100%; height: 92px; }
+  .card b { display: block; font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card button { margin-top: 3px; padding: 1px 6px; font-size: 10px; }
+  .empty { padding: 24px; text-align: center; color: #555; width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="window raised">
+  <div class="title">
+    <span>😀</span><span>Comic Chat — Character Maker</span>
+    <span class="spacer"></span>
+    <button class="tbtn raised">_</button><button class="tbtn raised">□</button><button class="tbtn raised">×</button>
+  </div>
+  <div class="menu"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>C</u>haracter</span><span><u>H</u>elp</span></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" aria-selected="true" data-tab="make">Make your character</button>
+    <button class="tab" role="tab" aria-selected="false" data-tab="roster">Roster (broadcaster)</button>
+  </div>
+
+  <!-- ============================ MAKE ============================ -->
+  <div class="pane" id="pane-make">
+    <div class="cols">
+      <div>
+        <fieldset>
+          <legend>Preview</legend>
+          <div class="stagewrap sunken"><svg id="stage" viewBox="0 0 120 200"></svg></div>
+        </fieldset>
+        <fieldset>
+          <legend>Gesture wheel</legend>
+          <div id="wheelwrap" class="sunken"><svg id="wheel" viewBox="0 0 240 218"></svg></div>
+          <div class="btnrow" style="margin-top:8px">
+            <button id="cycle" class="wide">▶ Play all gestures</button>
+          </div>
+        </fieldset>
+      </div>
+
+      <div>
+        <fieldset>
+          <legend>Who is this?</legend>
+          <div class="row"><label for="name">Twitch name</label><input type="text" id="name" placeholder="your_twitch_login" maxlength="25"></div>
+          <p class="hint" style="margin:6px 0 0">Type it exactly as it appears in chat. This is how the overlay finds you.</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Body</legend>
+          <div id="parts"></div>
+          <div class="row"><label for="scale">Height</label>
+            <input type="range" id="scale" min="80" max="125" value="100" style="width:100%">
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Colours</legend>
+          <div id="colors"></div>
+        </fieldset>
+
+        <div class="btnrow">
+          <button id="rand">🎲 Surprise me</button>
+          <button id="reset">Start over</button>
+        </div>
+      </div>
+    </div>
+
+    <fieldset style="margin-top:12px">
+      <legend>Your character code</legend>
+      <div class="row" style="grid-template-columns:1fr auto auto auto; gap:6px">
+        <input type="text" id="code" readonly>
+        <button id="copy">Copy code</button>
+        <button id="dljson">Save .json</button>
+        <button id="dlpng">Save picture</button>
+      </div>
+      <p class="hint" style="margin:8px 0 0">
+        Redeem <b>Make my chat character</b> on the channel, then paste this code as your message.
+        The whole character is inside the code — nothing is uploaded anywhere.
+      </p>
+      <div class="row" style="margin-top:8px"><label for="load">Load a code</label>
+        <div class="cycler"><input type="text" id="load" placeholder="paste CC1-… to edit it"></div>
+      </div>
+      <div class="status sunken" id="status">Ready.</div>
+    </fieldset>
+  </div>
+
+  <!-- ============================ ROSTER ============================ -->
+  <div class="pane" id="pane-roster" hidden>
+    <fieldset>
+      <legend>Add redeemed characters</legend>
+      <p class="hint" style="margin:0 0 8px">
+        One per line: <code>username CC1-xxxx</code> — paste straight from your redeem log. Codes without a
+        username in front use the name baked into the code.
+      </p>
+      <textarea id="bulk" rows="5" placeholder="retroklaus CC1-eyJ...&#10;miyuki CC1-eyJ..."></textarea>
+      <div class="btnrow" style="margin-top:8px">
+        <button id="addbulk">Add to roster</button>
+        <button id="loadfile">Open roster.json…</button>
+        <input type="file" id="file" accept=".json" hidden>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Roster — <span id="count">0</span> character(s)</legend>
+      <div class="roster" id="rosterlist"><div class="empty">No custom characters yet. Everyone else gets an auto-generated one.</div></div>
+      <div class="btnrow" style="margin-top:8px">
+        <button id="save">💾 Save roster.json</button>
+        <button id="clear">Empty the roster</button>
+      </div>
+      <p class="hint" style="margin:8px 0 0">
+        Drop the saved file next to <code>comic-chat.html</code> in <code>avatars/roster.json</code>.
+        The overlay re-reads it every 30 seconds — no need to touch OBS.
+      </p>
+    </fieldset>
+  </div>
+</div>
+
+<script src="js/comic-avatar.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CA = window.ComicAvatar;
+  var $ = function (s) { return document.querySelector(s); };
+
+  /* ------------------------------------------------------------- state */
+  var spec = CA.fromSeed('comic' + Math.random());
+  var emotion = 'happy';
+  var playing = null;
+
+  var LABELS = {
+    head: 'Head', hair: 'Hair', eyes: 'Eyes', brows: 'Brows', nose: 'Nose',
+    facialHair: 'Whiskers', body: 'Outfit', legs: 'Legs', accessory: 'Extra'
+  };
+  var COLORKEYS = [
+    ['skin', 'Skin', CA.PAL.skin],
+    ['hair', 'Hair', CA.PAL.hair],
+    ['top', 'Top', CA.PAL.cloth],
+    ['bottom', 'Bottom', CA.PAL.cloth],
+    ['accent', 'Accent', CA.PAL.cloth]
+  ];
+
+  /* ------------------------------------------------------------ builders */
+  function buildParts() {
+    var host = $('#parts');
+    host.innerHTML = '';
+    Object.keys(CA.OPT).forEach(function (key) {
+      var row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = '<label>' + LABELS[key] + '</label>' +
+        '<div class="cycler"><button data-d="-1">◀</button><div class="val" id="v-' + key + '"></div><button data-d="1">▶</button></div>';
+      row.querySelectorAll('button').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var list = CA.OPT[key];
+          var i = list.indexOf(spec.parts[key]) + (+b.dataset.d);
+          spec.parts[key] = list[(i + list.length) % list.length];
+          paint();
+        });
+      });
+      host.appendChild(row);
+    });
+  }
+
+  function buildColors() {
+    var host = $('#colors');
+    host.innerHTML = '';
+    COLORKEYS.forEach(function (c) {
+      var key = c[0];
+      var row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = '<label>' + c[1] + '</label><div class="swatches" id="s-' + key + '"></div>';
+      host.appendChild(row);
+      var sw = row.querySelector('.swatches');
+      c[2].forEach(function (hex) {
+        var b = document.createElement('button');
+        b.className = 'chip'; b.style.background = hex; b.title = hex;
+        b.dataset.hex = hex; b.dataset.key = key;
+        b.addEventListener('click', function () { spec.palette[key] = hex; paint(); });
+        sw.appendChild(b);
+      });
+      var inp = document.createElement('input');
+      inp.type = 'color'; inp.id = 'c-' + key;
+      inp.addEventListener('input', function () { spec.palette[key] = inp.value; paint(); });
+      sw.appendChild(inp);
+    });
+  }
+
+  /* --------------------------------------------- the wheel (signature) */
+  var WC = { cx: 120, cy: 104, r: 78 };
+  function buildWheel() {
+    var w = $('#wheel'), out = '';
+    out += '<circle cx="120" cy="104" r="90" fill="none" stroke="#141414" stroke-width="2"/>';
+    out += '<circle cx="120" cy="104" r="18" fill="#fffdf3" stroke="#141414" stroke-width="2"/>';
+    out += '<line id="needle" x1="120" y1="104" x2="120" y2="30" stroke="#141414" stroke-width="2.5"/>';
+    out += '<circle cx="120" cy="104" r="4" fill="#141414"/>';
+    CA.EMOTIONS.forEach(function (name, i) {
+      var a = (i / CA.EMOTIONS.length) * Math.PI * 2 - Math.PI / 2;
+      var x = WC.cx + Math.cos(a) * WC.r, y = WC.cy + Math.sin(a) * WC.r;
+      out += '<circle class="spoke" data-e="' + name + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="8"><title>' + name + '</title></circle>';
+    });
+    out += '<text id="wlabel" x="120" y="204" text-anchor="middle" font-size="12">happy</text>';
+    w.innerHTML = out;
+    w.addEventListener('pointerdown', onWheel);
+    w.addEventListener('pointermove', function (e) { if (e.buttons) onWheel(e); });
+  }
+
+  function onWheel(e) {
+    var w = $('#wheel'), r = w.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width * 240, y = (e.clientY - r.top) / r.height * 218;
+    var a = Math.atan2(y - WC.cy, x - WC.cx) + Math.PI / 2;
+    var n = CA.EMOTIONS.length;
+    var i = Math.round(a / (Math.PI * 2) * n);
+    setEmotion(CA.EMOTIONS[((i % n) + n) % n]);
+    stopPlay();
+  }
+
+  function setEmotion(e) { emotion = e; paint(); }
+
+  /* -------------------------------------------------------------- paint */
+  function paint() {
+    spec = CA.normalize(spec);
+    spec.name = $('#name').value.trim() || spec.name;
+    spec.scale = (+$('#scale').value) / 100;
+    $('#stage').innerHTML = CA.draw(spec, emotion);
+
+    Object.keys(CA.OPT).forEach(function (k) {
+      var el = document.getElementById('v-' + k);
+      if (el) el.textContent = spec.parts[k].replace(/([a-z])([A-Z])/g, '$1 $2');
+    });
+    COLORKEYS.forEach(function (c) {
+      var inp = document.getElementById('c-' + c[0]);
+      if (inp) inp.value = spec.palette[c[0]];
+      document.querySelectorAll('.chip[data-key="' + c[0] + '"]').forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.hex === spec.palette[c[0]] ? 'true' : 'false');
+      });
+    });
+
+    var i = CA.EMOTIONS.indexOf(emotion);
+    var a = (i / CA.EMOTIONS.length) * Math.PI * 2 - Math.PI / 2;
+    var nd = document.getElementById('needle');
+    if (nd) { nd.setAttribute('x2', WC.cx + Math.cos(a) * (WC.r - 12)); nd.setAttribute('y2', WC.cy + Math.sin(a) * (WC.r - 12)); }
+    document.querySelectorAll('#wheel .spoke').forEach(function (s) { s.classList.toggle('on', s.dataset.e === emotion); });
+    var lbl = document.getElementById('wlabel'); if (lbl) lbl.textContent = emotion;
+
+    $('#code').value = CA.encode(spec);
+  }
+
+  function say(msg) { $('#status').textContent = msg; }
+
+  /* ------------------------------------------------------------ actions */
+  function stopPlay() { if (playing) { clearInterval(playing); playing = null; $('#cycle').textContent = '▶ Play all gestures'; } }
+
+  $('#cycle').addEventListener('click', function () {
+    if (playing) return stopPlay();
+    var i = CA.EMOTIONS.indexOf(emotion);
+    playing = setInterval(function () { i = (i + 1) % CA.EMOTIONS.length; setEmotion(CA.EMOTIONS[i]); }, 750);
+    $('#cycle').textContent = '■ Stop';
+  });
+
+  $('#rand').addEventListener('click', function () {
+    var keep = $('#name').value.trim();
+    spec = CA.fromSeed('r' + Math.random());
+    if (keep) spec.name = keep;
+    $('#scale').value = Math.round(spec.scale * 100);
+    paint(); say('Rolled a new character.');
+  });
+
+  $('#reset').addEventListener('click', function () {
+    spec = CA.normalize({ name: $('#name').value.trim() || 'Anon' });
+    $('#scale').value = 100; paint(); say('Back to the blank character.');
+  });
+
+  $('#name').addEventListener('input', paint);
+  $('#scale').addEventListener('input', paint);
+
+  $('#copy').addEventListener('click', function () {
+    var v = $('#code').value;
+    navigator.clipboard.writeText(v).then(function () { say('Code copied. Paste it into the redeem.'); },
+      function () { $('#code').select(); say('Press Ctrl+C to copy the selected code.'); });
+  });
+
+  $('#load').addEventListener('input', function (e) {
+    var s = CA.decode(e.target.value);
+    if (!s) { if (e.target.value.trim()) say('That code is not readable. Codes start with CC1-'); return; }
+    spec = s; $('#name').value = s.name; $('#scale').value = Math.round(s.scale * 100);
+    paint(); say('Loaded ' + s.name + '.');
+  });
+
+  function download(name, text, type) {
+    var b = new Blob([text], { type: type || 'application/json' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(b); a.download = name; a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 1000);
+  }
+
+  $('#dljson').addEventListener('click', function () {
+    var key = ($('#name').value.trim() || 'character').toLowerCase();
+    download(key + '.json', JSON.stringify({ avatars: (function () { var o = {}; o[key] = spec; return o; })() }, null, 2));
+    say('Saved ' + key + '.json');
+  });
+
+  $('#dlpng').addEventListener('click', function () {
+    var svg = CA.card(spec, emotion, 600);
+    var img = new Image();
+    img.onload = function () {
+      var c = document.createElement('canvas');
+      c.width = img.width; c.height = img.height;
+      var g = c.getContext('2d');
+      g.fillStyle = '#fffdf3'; g.fillRect(0, 0, c.width, c.height);
+      g.drawImage(img, 0, 0);
+      c.toBlob(function (b) {
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(b); a.download = (spec.name || 'character') + '.png'; a.click();
+      });
+      say('Saved the picture.');
+    };
+    img.onerror = function () { say('Could not render the picture — save the .json instead.'); };
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
+  });
+
+  /* -------------------------------------------------------------- tabs */
+  document.querySelectorAll('.tab').forEach(function (t) {
+    t.addEventListener('click', function () {
+      document.querySelectorAll('.tab').forEach(function (o) { o.setAttribute('aria-selected', String(o === t)); });
+      $('#pane-make').hidden = t.dataset.tab !== 'make';
+      $('#pane-roster').hidden = t.dataset.tab !== 'roster';
+      if (t.dataset.tab === 'roster') paintRoster();
+    });
+  });
+
+  /* ------------------------------------------------------------ roster */
+  var roster = {};
+  try { roster = JSON.parse(localStorage.getItem('comicRoster') || '{}'); } catch (e) { roster = {}; }
+
+  function persist() { try { localStorage.setItem('comicRoster', JSON.stringify(roster)); } catch (e) {} }
+
+  function paintRoster() {
+    var host = $('#rosterlist');
+    var keys = Object.keys(roster).sort();
+    $('#count').textContent = keys.length;
+    if (!keys.length) { host.innerHTML = '<div class="empty">No custom characters yet. Everyone else gets an auto-generated one.</div>'; return; }
+    host.innerHTML = '';
+    keys.forEach(function (k) {
+      var d = document.createElement('div');
+      d.className = 'card';
+      d.innerHTML = CA.card(roster[k], 'wave', 200) + '<b title="' + k + '">' + k + '</b>';
+      var rm = document.createElement('button');
+      rm.textContent = 'Remove';
+      rm.addEventListener('click', function () { delete roster[k]; persist(); paintRoster(); });
+      d.appendChild(rm);
+      host.appendChild(d);
+    });
+  }
+
+  $('#addbulk').addEventListener('click', function () {
+    var lines = $('#bulk').value.split('\n'), added = 0, bad = 0;
+    lines.forEach(function (ln) {
+      ln = ln.trim(); if (!ln) return;
+      var m = ln.match(/^(?:@?([A-Za-z0-9_]{2,25})\s+)?(CC1-[A-Za-z0-9\-_]+)/);
+      if (!m) { bad++; return; }
+      var s = CA.decode(m[2]);
+      if (!s) { bad++; return; }
+      var key = (m[1] || s.name || '').toLowerCase().replace(/[^a-z0-9_]/g, '');
+      if (!key) { bad++; return; }
+      s.id = key; roster[key] = s; added++;
+    });
+    persist(); paintRoster();
+    $('#bulk').value = '';
+    $('#count').textContent = Object.keys(roster).length;
+    alert(added + ' added' + (bad ? ', ' + bad + ' line(s) could not be read' : '') + '.');
+  });
+
+  $('#loadfile').addEventListener('click', function () { $('#file').click(); });
+  $('#file').addEventListener('change', function (e) {
+    var f = e.target.files[0]; if (!f) return;
+    f.text().then(function (t) {
+      var j = JSON.parse(t);
+      var src = j.avatars || j, n = 0;
+      Object.keys(src).forEach(function (k) {
+        var v = src[k];
+        var s = typeof v === 'string' ? CA.decode(v) : CA.normalize(v);
+        if (s) { roster[k.toLowerCase()] = s; n++; }
+      });
+      persist(); paintRoster();
+      alert('Loaded ' + n + ' character(s).');
+    }).catch(function () { alert('That file is not a roster.json.'); });
+  });
+
+  $('#save').addEventListener('click', function () {
+    download('roster.json', JSON.stringify({ avatars: roster }, null, 2));
+  });
+  $('#clear').addEventListener('click', function () {
+    if (confirm('Remove every custom character from the roster?')) { roster = {}; persist(); paintRoster(); }
+  });
+
+  /* -------------------------------------------------------------- boot */
+  buildParts(); buildColors(); buildWheel();
+  $('#scale').value = Math.round(spec.scale * 100);
+  paint();
+})();
+</script>
+</body>
+</html>
