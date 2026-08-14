@@ -1,0 +1,690 @@
+{
+  "$schema": "comic-chat asset manifest v2",
+  "canvas": {
+    "w": 120,
+    "h": 200
+  },
+  "palette": {
+    "tokens": {
+      "skin": "#ff00ff",
+      "hair": "#00ff00",
+      "top": "#0000ff",
+      "bottom": "#ffff00",
+      "accent": "#00ffff"
+    },
+    "hueTolerance": 18,
+    "minSaturation": 0.25,
+    "swatches": {
+      "skin": [
+        "#ffe0c4",
+        "#f6d5b8",
+        "#f0c39a",
+        "#e0a878",
+        "#c78a5c",
+        "#a2653c",
+        "#6f4426",
+        "#4a2c17",
+        "#b5e0c0",
+        "#cbb8f0"
+      ],
+      "hair": [
+        "#1b1410",
+        "#3a2a1a",
+        "#6b4423",
+        "#a9702f",
+        "#d9a441",
+        "#e8dcc0",
+        "#b0b0b0",
+        "#8b1e1e",
+        "#2b4a7a",
+        "#3f7a4a",
+        "#7a3f7a",
+        "#f05a9b",
+        "#20c4c4"
+      ],
+      "top": [
+        "#c0392b",
+        "#2980b9",
+        "#27ae60",
+        "#8e44ad",
+        "#f39c12",
+        "#16a085",
+        "#d35400",
+        "#2c3e50",
+        "#7f8c8d",
+        "#e84393",
+        "#1a1a1a",
+        "#ecf0f1"
+      ],
+      "bottom": [
+        "#2c3e50",
+        "#34495e",
+        "#7f8c8d",
+        "#1a1a1a",
+        "#5d4037",
+        "#2980b9",
+        "#8e44ad",
+        "#c0392b",
+        "#ecf0f1",
+        "#16a085"
+      ],
+      "accent": [
+        "#c0392b",
+        "#f1c40f",
+        "#27ae60",
+        "#e84393",
+        "#00b894",
+        "#0984e3",
+        "#fdcb6e",
+        "#1a1a1a",
+        "#ecf0f1",
+        "#8e44ad"
+      ]
+    }
+  },
+  "slots": [
+    {
+      "id": "hair",
+      "label": "Hair",
+      "z": 10,
+      "thumb": [
+        26,
+        4,
+        68,
+        56
+      ],
+      "backLayer": true,
+      "tint": "hair"
+    },
+    {
+      "id": "legs",
+      "label": "Lower body",
+      "z": 20,
+      "thumb": [
+        26,
+        142,
+        68,
+        58
+      ],
+      "tint": "bottom"
+    },
+    {
+      "id": "feet",
+      "label": "Feet",
+      "z": 30,
+      "thumb": [
+        30,
+        178,
+        60,
+        26
+      ],
+      "tint": "accent"
+    },
+    {
+      "id": "torso",
+      "label": "Upper body",
+      "z": 40,
+      "thumb": [
+        26,
+        84,
+        68,
+        76
+      ],
+      "tint": "top"
+    },
+    {
+      "id": "head",
+      "label": "Head",
+      "z": 50,
+      "thumb": [
+        22,
+        4,
+        76,
+        90
+      ],
+      "tint": "skin"
+    },
+    {
+      "id": "brows",
+      "label": "Brows",
+      "z": 60,
+      "thumb": [
+        34,
+        24,
+        52,
+        24
+      ],
+      "optional": true
+    },
+    {
+      "id": "eyes",
+      "label": "Eyes",
+      "z": 61,
+      "thumb": [
+        34,
+        30,
+        52,
+        30
+      ],
+      "expressive": true
+    },
+    {
+      "id": "mouth",
+      "label": "Mouth",
+      "z": 62,
+      "thumb": [
+        42,
+        54,
+        36,
+        26
+      ],
+      "expressive": true
+    },
+    {
+      "id": "beard",
+      "label": "Whiskers",
+      "z": 63,
+      "thumb": [
+        34,
+        48,
+        52,
+        46
+      ],
+      "optional": true,
+      "tint": "hair"
+    },
+    {
+      "id": "hairFront",
+      "label": "Hair (front)",
+      "z": 64,
+      "mirrors": "hair",
+      "hidden": true,
+      "tint": "hair"
+    },
+    {
+      "id": "glasses",
+      "label": "Glasses",
+      "z": 70,
+      "thumb": [
+        30,
+        28,
+        60,
+        32
+      ],
+      "optional": true,
+      "tint": "accent"
+    },
+    {
+      "id": "hat",
+      "label": "Hat",
+      "z": 80,
+      "thumb": [
+        16,
+        -6,
+        88,
+        56
+      ],
+      "optional": true,
+      "tint": "accent"
+    }
+  ],
+  "expressions": {
+    "order": [
+      "neutral",
+      "talk",
+      "happy",
+      "laugh",
+      "wink",
+      "coy",
+      "cool",
+      "love",
+      "think",
+      "bored",
+      "sad",
+      "scared",
+      "shocked",
+      "angry",
+      "shout",
+      "dead"
+    ],
+    "pose": {
+      "neutral": {},
+      "talk": {},
+      "happy": {
+        "tilt": -2
+      },
+      "laugh": {
+        "tilt": -5,
+        "hop": 4
+      },
+      "wink": {
+        "tilt": -3
+      },
+      "coy": {
+        "tilt": -7
+      },
+      "cool": {
+        "tilt": -2
+      },
+      "love": {
+        "tilt": -3,
+        "hop": 2
+      },
+      "think": {
+        "tilt": -4
+      },
+      "bored": {
+        "tilt": 3,
+        "droop": 4
+      },
+      "sad": {
+        "tilt": 6,
+        "droop": 5
+      },
+      "scared": {
+        "tilt": 4,
+        "shake": true
+      },
+      "shocked": {
+        "hop": 3,
+        "grow": 1.04
+      },
+      "angry": {
+        "grow": 1.03
+      },
+      "shout": {
+        "tilt": -3,
+        "grow": 1.07
+      },
+      "dead": {
+        "tilt": 12,
+        "droop": 6
+      }
+    },
+    "alias": {
+      "sassy": "coy",
+      "wave": "happy",
+      "point": "talk",
+      "question": "think",
+      "x": "dead"
+    }
+  },
+  "assets": {
+    "head": [
+      {
+        "id": "oval",
+        "file": "head/oval.png"
+      },
+      {
+        "id": "pear",
+        "file": "head/pear.png"
+      },
+      {
+        "id": "round",
+        "file": "head/round.png"
+      },
+      {
+        "id": "square",
+        "file": "head/square.png"
+      },
+      {
+        "id": "tall",
+        "file": "head/tall.png"
+      },
+      {
+        "id": "wide",
+        "file": "head/wide.png"
+      }
+    ],
+    "eyes": [
+      {
+        "id": "anime",
+        "file": "eyes/anime.png"
+      },
+      {
+        "id": "dot",
+        "file": "eyes/dot.png"
+      },
+      {
+        "id": "lashes",
+        "file": "eyes/lashes.png"
+      },
+      {
+        "id": "round",
+        "file": "eyes/round.png"
+      },
+      {
+        "id": "sharp",
+        "file": "eyes/sharp.png"
+      },
+      {
+        "id": "sleepy",
+        "file": "eyes/sleepy.png"
+      },
+      {
+        "id": "wide",
+        "file": "eyes/wide.png"
+      }
+    ],
+    "brows": [
+      {
+        "id": "angled",
+        "file": "brows/angled.png"
+      },
+      {
+        "id": "curved",
+        "file": "brows/curved.png"
+      },
+      {
+        "id": "flat",
+        "file": "brows/flat.png"
+      },
+      {
+        "id": "none",
+        "file": "brows/none.png"
+      },
+      {
+        "id": "thick",
+        "file": "brows/thick.png"
+      }
+    ],
+    "mouth": [
+      {
+        "id": "grin",
+        "file": "mouth/grin.png"
+      },
+      {
+        "id": "line",
+        "file": "mouth/line.png"
+      },
+      {
+        "id": "open",
+        "file": "mouth/open.png"
+      },
+      {
+        "id": "small",
+        "file": "mouth/small.png"
+      },
+      {
+        "id": "smile",
+        "file": "mouth/smile.png"
+      },
+      {
+        "id": "smirk",
+        "file": "mouth/smirk.png"
+      }
+    ],
+    "hair": [
+      {
+        "id": "afro",
+        "file": "hair/afro.png"
+      },
+      {
+        "id": "bob",
+        "file": "hair/bob.png",
+        "back": "hair/bob.back.png"
+      },
+      {
+        "id": "bun",
+        "file": "hair/bun.png"
+      },
+      {
+        "id": "buzz",
+        "file": "hair/buzz.png"
+      },
+      {
+        "id": "curly",
+        "file": "hair/curly.png",
+        "back": "hair/curly.back.png"
+      },
+      {
+        "id": "long",
+        "file": "hair/long.png",
+        "back": "hair/long.back.png"
+      },
+      {
+        "id": "mohawk",
+        "file": "hair/mohawk.png"
+      },
+      {
+        "id": "none",
+        "file": "hair/none.png"
+      },
+      {
+        "id": "ponytail",
+        "file": "hair/ponytail.png",
+        "back": "hair/ponytail.back.png"
+      },
+      {
+        "id": "short",
+        "file": "hair/short.png"
+      },
+      {
+        "id": "spiky",
+        "file": "hair/spiky.png"
+      }
+    ],
+    "beard": [
+      {
+        "id": "beard",
+        "file": "beard/beard.png"
+      },
+      {
+        "id": "goatee",
+        "file": "beard/goatee.png"
+      },
+      {
+        "id": "moustache",
+        "file": "beard/moustache.png"
+      },
+      {
+        "id": "none",
+        "file": "beard/none.png"
+      },
+      {
+        "id": "stubble",
+        "file": "beard/stubble.png"
+      }
+    ],
+    "torso": [
+      {
+        "id": "hoodie",
+        "file": "torso/hoodie.png"
+      },
+      {
+        "id": "jacket",
+        "file": "torso/jacket.png"
+      },
+      {
+        "id": "overall",
+        "file": "torso/overall.png"
+      },
+      {
+        "id": "robe",
+        "file": "torso/robe.png"
+      },
+      {
+        "id": "suit",
+        "file": "torso/suit.png"
+      },
+      {
+        "id": "tank",
+        "file": "torso/tank.png"
+      },
+      {
+        "id": "tee",
+        "file": "torso/tee.png"
+      }
+    ],
+    "legs": [
+      {
+        "id": "baggy",
+        "file": "legs/baggy.png"
+      },
+      {
+        "id": "long",
+        "file": "legs/long.png"
+      },
+      {
+        "id": "pants",
+        "file": "legs/pants.png"
+      },
+      {
+        "id": "shorts",
+        "file": "legs/shorts.png"
+      },
+      {
+        "id": "skirt",
+        "file": "legs/skirt.png"
+      }
+    ],
+    "feet": [
+      {
+        "id": "bare",
+        "file": "feet/bare.png"
+      },
+      {
+        "id": "boots",
+        "file": "feet/boots.png"
+      },
+      {
+        "id": "heels",
+        "file": "feet/heels.png"
+      },
+      {
+        "id": "shoes",
+        "file": "feet/shoes.png"
+      },
+      {
+        "id": "sneakers",
+        "file": "feet/sneakers.png"
+      }
+    ],
+    "hat": [
+      {
+        "id": "bandana",
+        "file": "hat/bandana.png"
+      },
+      {
+        "id": "beanie",
+        "file": "hat/beanie.png"
+      },
+      {
+        "id": "cap",
+        "file": "hat/cap.png"
+      },
+      {
+        "id": "crown",
+        "file": "hat/crown.png"
+      },
+      {
+        "id": "headphones",
+        "file": "hat/headphones.png"
+      },
+      {
+        "id": "horns",
+        "file": "hat/horns.png"
+      },
+      {
+        "id": "none",
+        "file": "hat/none.png"
+      },
+      {
+        "id": "tophat",
+        "file": "hat/tophat.png"
+      }
+    ],
+    "glasses": [
+      {
+        "id": "eyepatch",
+        "file": "glasses/eyepatch.png"
+      },
+      {
+        "id": "monocle",
+        "file": "glasses/monocle.png"
+      },
+      {
+        "id": "none",
+        "file": "glasses/none.png"
+      },
+      {
+        "id": "round",
+        "file": "glasses/round.png"
+      },
+      {
+        "id": "shades",
+        "file": "glasses/shades.png"
+      },
+      {
+        "id": "square",
+        "file": "glasses/square.png"
+      }
+    ],
+    "expression": [
+      {
+        "id": "angry",
+        "file": "expression/angry.png"
+      },
+      {
+        "id": "bored",
+        "file": "expression/bored.png"
+      },
+      {
+        "id": "cool",
+        "file": "expression/cool.png"
+      },
+      {
+        "id": "coy",
+        "file": "expression/coy.png"
+      },
+      {
+        "id": "dead",
+        "file": "expression/dead.png"
+      },
+      {
+        "id": "happy",
+        "file": "expression/happy.png"
+      },
+      {
+        "id": "laugh",
+        "file": "expression/laugh.png"
+      },
+      {
+        "id": "love",
+        "file": "expression/love.png"
+      },
+      {
+        "id": "neutral",
+        "file": "expression/neutral.png"
+      },
+      {
+        "id": "sad",
+        "file": "expression/sad.png"
+      },
+      {
+        "id": "scared",
+        "file": "expression/scared.png"
+      },
+      {
+        "id": "shocked",
+        "file": "expression/shocked.png"
+      },
+      {
+        "id": "shout",
+        "file": "expression/shout.png"
+      },
+      {
+        "id": "talk",
+        "file": "expression/talk.png"
+      },
+      {
+        "id": "think",
+        "file": "expression/think.png"
+      },
+      {
+        "id": "wink",
+        "file": "expression/wink.png"
+      }
+    ]
+  }
+}
